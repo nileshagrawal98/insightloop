@@ -29,8 +29,11 @@ export default async function DashboardPage() {
 
   return (
     <main className="max-w-3xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-4">
+        Welcome, {session.user.name?.split(" ")[0]} 👋
+      </h1>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Your Documents</h1>
+        <h2 className="text-2xl font-semibold">Your Documents</h2>
         <Button asChild>
           <Link href="/dashboard/upload">+ Upload</Link>
         </Button>
