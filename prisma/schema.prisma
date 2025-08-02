@@ -1,15 +1,47 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String? @unique
+  image         String?
+  documents     Document[]
+  notes         Note[]
+  createdAt     DateTime @default(now())
+}
+
+model Document {
+  id            String   @id @default(cuid())
+  title         String
+  fileUrl       String   // ✅ S3 or UploadThing URL
+  summary       String?
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  sharedWith    SharedAccess[]
+  notes         Note[]
+  createdAt     DateTime @default(now())
+}
+
+model SharedAccess {
+  id          String   @id @default(cuid())
+  email       String
+  document    Document @relation(fields: [documentId], references: [id])
+  documentId  String
+}
+
+model Note {
+  id            String   @id @default(cuid())
+  content       String
+  document      Document @relation(fields: [documentId], references: [id])
+  documentId    String
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  createdAt     DateTime @default(now())
 }
