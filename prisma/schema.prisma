@@ -14,6 +14,7 @@ model User {
   image         String?
   documents     Document[]
   notes         Note[]
+  emailVerified DateTime?
   createdAt     DateTime @default(now())
 }
 

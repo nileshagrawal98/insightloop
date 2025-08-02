@@ -1,86 +1,70 @@
-// Project: InsightLoop – AI-powered Meeting & Document Knowledge Hub
+Great question — and yes, you’re absolutely right to pause and ask:
 
-// Stack:
-// Frontend: Next.js (App Router), Tailwind, shadcn/ui
-// Backend: Next.js API routes
-// Database: PostgreSQL with Prisma
-// Auth: NextAuth.js
-// AI: OpenAI API
-// File Upload: Base64 (for now), S3 (optional later)
+> Should we build UI + basic APIs first, or set up authentication first?
 
-// Initial Setup Plan:
-// 1. Folder structure
-// 2. Prisma schema
-// 3. Page layout overview
-// 4. API endpoint plan
-// 5. MVP task list
+---
 
-// Folder Structure (inside /insightloop):
-// ├── app
-// │   ├── layout.tsx
-// │   ├── page.tsx (landing page)
-// │   ├── dashboard
-// │   │   ├── page.tsx (user dashboard)
-// │   │   └── [docId]/page.tsx (single document/chat view)
-// ├── components
-// │   ├── Navbar.tsx
-// │   ├── FileUploader.tsx
-// │   ├── ChatWithDoc.tsx
-// │   ├── NotesEditor.tsx
-// ├── lib
-// │   ├── prisma.ts
-// │   ├── openai.ts
-// ├── pages
-// │   └── api
-// │       ├── auth/[...nextauth].ts
-// │       ├── upload.ts
-// │       ├── summarize.ts
-// │       └── chat.ts
-// ├── prisma
-// │   └── schema.prisma
-// ├── styles
-// ├── public
-// ├── .env
+## 🧭 Recommended Step-by-Step Roadmap (with reasoning)
 
-// Prisma Schema (first draft):
-/*
-model User {
-  id            String   @id @default(cuid())
-  name          String?
-  email         String? @unique
-  image         String?
-  documents     Document[]
-  notes         Note[]
-  createdAt     DateTime @default(now())
-}
+### ✅ Phase 1: **Core Setup**
 
-model Document {
-  id            String   @id @default(cuid())
-  title         String
-  content       String   // base64 or text
-  summary       String?
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
-  sharedWith    String[] // emails with access
-  createdAt     DateTime @default(now())
-}
+These are things you do once and use throughout:
 
-model Note {
-  id            String   @id @default(cuid())
-  content       String
-  document      Document @relation(fields: [documentId], references: [id])
-  documentId    String
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
-  createdAt     DateTime @default(now())
-}
-*/
+1. ✅ Set up project folder with App Router
+2. ✅ Set up TailwindCSS and shadcn/ui
+3. ✅ Configure Prisma with PostgreSQL
+4. ✅ Create `lib/prisma.ts` (✅ done)
+5. ✅ Test query route like `/api/docs` (✅ done)
 
-// Next Steps:
-// - Setup Next.js with App Router
-// - Add Tailwind & shadcn
-// - Configure Prisma + PostgreSQL
-// - Add NextAuth with Google login
-// - Create upload + summary API endpoints
-// - Build Dashboard UI (upload, list docs, click to open)
-// - Add Chat + Notes view
+---
+
+### ✅ Phase 2: **Authentication Setup**
+
+**Do this early** because:
+
+* You’ll want all dashboard logic (uploads, summaries, notes) to be **user-specific**
+* If you delay auth, you’ll have to rewrite logic later to support logged-in users
+
+So:
+6\. 🔐 Add NextAuth with Google login
+7\. 🔐 Sync `User` model in DB
+8\. 🔐 Protect dashboard routes (only visible to logged-in users)
+
+---
+
+### ✅ Phase 3: **Basic UI + API**
+
+After auth is done:
+9\. 🧩 Build `/dashboard` UI
+10\. 📁 Add Upload component (`FileUploader.tsx`)
+11\. 🧠 Add `/api/upload.ts` endpoint (store file URL in DB)
+12\. 🤖 Add `/api/summarize.ts` to call OpenAI and save summary
+
+---
+
+### ✅ Phase 4: **Document Details Page**
+
+13. 🗂️ `dashboard/[docId]/page.tsx` → show file summary + notes
+14. 📝 Add `NotesEditor.tsx` to view + write notes
+
+---
+
+### ✅ Phase 5: **Enhancements**
+
+15. 🔗 Add sharing logic (SharedAccess model)
+16. 🧠 Add chat feature with AI for each doc
+17. 📦 Add file preview or download
+
+---
+
+## ✅ So What Should We Do *Now*?
+
+You're at the **perfect point to do authentication** next. Here’s why:
+
+* Your DB is ready
+* You’ve tested Prisma queries
+* You’ll want user IDs for uploaded files
+
+---
+
+Would you like me to re-guide you through NextAuth setup step-by-step now (with explanations again, as you prefer)?
