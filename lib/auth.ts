@@ -25,3 +25,7 @@ export const authOptions: NextAuthOptions = {
 export function getAuthSession() {
   return getServerSession(authOptions);
 }
+
+export function getAuthApiSession(req: any, res: any) {
+  return getServerSession(req, res, authOptions);
+}

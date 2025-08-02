@@ -13,6 +13,8 @@ export default function FileUploader() {
   const handleClick = () => inputRef.current?.click();
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isUploading) return;
+
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
@@ -21,7 +23,19 @@ export default function FileUploader() {
     try {
       const res = await startUpload([selectedFile]);
       console.log("Upload success:", res);
-      // TODO: Save file URL to DB here
+
+      const uploaded = res?.[0];
+      console.log("uploaded: ", uploaded);
+      if (!uploaded) return;
+
+      await fetch("/api/save-upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: uploaded.name,
+          fileUrl: uploaded.url,
+        }),
+      });
     } catch (err) {
       console.error("Upload failed", err);
     }
