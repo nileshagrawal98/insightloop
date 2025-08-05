@@ -56,8 +56,25 @@ export async function POST(req: Request) {
     ],
   });
 
-  console.log("aiResponse: ", aiResponse);
-  const aiMessage = aiResponse.choices[0].message.content;
+  await prisma.message.create({
+    data: {
+      content: message,
+      role: "user",
+      documentId: docId,
+      userId: session.user.id,
+    },
+  });
+
+  const aiMessage = aiResponse.choices[0].message.content || "No Response";
+
+  await prisma.message.create({
+    data: {
+      content: aiMessage,
+      role: "ai",
+      documentId: docId,
+      userId: session.user.id,
+    },
+  });
 
   return NextResponse.json({ response: aiMessage });
 }

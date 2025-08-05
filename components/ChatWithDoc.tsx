@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
@@ -9,14 +9,26 @@ type Props = {
 };
 
 type Message = {
-  role: "user" | "bot";
+  role: "user" | "ai";
   content: string;
 };
 
 export default function ChatWithDoc({ docId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isFetchingMessages, setIsFetchingMessages] = useState(false);
   const [input, setInput] = useState<string>("");
   const [isProcessingChat, setIsProcessingChat] = useState(false);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      setIsFetchingMessages(true);
+      const msgRes = await fetch(`/api/messages?docId=${docId}`);
+      const { messages = [] } = await msgRes.json();
+      setMessages(messages);
+      setIsFetchingMessages(false);
+    };
+    fetchMessages();
+  }, []);
 
   const handleSend = async () => {
     if (isProcessingChat) return true;
@@ -40,7 +52,7 @@ export default function ChatWithDoc({ docId }: Props) {
           content: trimmedMessage,
         };
 
-        const botMessage: Message = { role: "bot", content: botMessageContent };
+        const botMessage: Message = { role: "ai", content: botMessageContent };
         setMessages((prev) => [...prev, userMessage, botMessage]);
         setInput("");
       } else {
@@ -58,27 +70,38 @@ export default function ChatWithDoc({ docId }: Props) {
     <div className="border rounded-lg p-4">
       <h2 className="font-semibold text-lg mb-2">Chat with Document</h2>
       <div className="space-y-2 max-h-64 overflow-y-auto mb-4">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`text-sm p-2 rounded ${
-              msg.role === "user" ? "bg-muted" : "bg-secondary"
-            }`}
-          >
-            <strong>{msg.role}:</strong> {<pre>msg.content</pre>}
-          </div>
-        ))}
+        {isFetchingMessages ? (
+          <div>Loading chat...</div>
+        ) : (
+          messages.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`text-sm p-2 rounded ${
+                msg.role === "user" ? "bg-muted" : "bg-secondary"
+              }`}
+            >
+              <strong>{msg.role === "ai" ? "AI" : "You"}:</strong>{" "}
+              <pre className="text-wrap">{msg.content}</pre>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="flex gap-2">
         <Input
-          disabled={isProcessingChat}
+          disabled={isProcessingChat || isFetchingMessages}
           placeholder="Ask something..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.keyCode === 13) handleSend();
+          }}
         />
-        <Button onClick={handleSend} disabled={isProcessingChat}>
-          Send
+        <Button
+          onClick={handleSend}
+          disabled={isProcessingChat || isFetchingMessages}
+        >
+          {isProcessingChat ? "Sending..." : "Send"}
         </Button>
       </div>
     </div>
