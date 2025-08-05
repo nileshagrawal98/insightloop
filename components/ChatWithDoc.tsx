@@ -16,20 +16,42 @@ type Message = {
 export default function ChatWithDoc({ docId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
+  const [isProcessingChat, setIsProcessingChat] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    if (isProcessingChat) return true;
+    setIsProcessingChat(true);
     const trimmedMessage = input.trim();
     if (!trimmedMessage) return;
 
-    const userMessage: Message = { role: "user", content: trimmedMessage };
-    setMessages((prev) => [...prev, userMessage]);
+    try {
+      const chatResponse = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ docId, message: trimmedMessage }),
+      });
 
-    //TODO: Send message to bot
+      if (chatResponse.ok) {
+        const botMessageContent =
+          (await chatResponse.json())?.response || "No Response";
 
-    const botMessage: Message = { role: "bot", content: "Banananana" };
-    setMessages((prev) => [...prev, botMessage]);
+        const userMessage: Message = {
+          role: "user",
+          content: trimmedMessage,
+        };
 
-    setInput("");
+        const botMessage: Message = { role: "bot", content: botMessageContent };
+        setMessages((prev) => [...prev, userMessage, botMessage]);
+        setInput("");
+      } else {
+        alert("Chat failed. Try again");
+      }
+    } catch (err) {
+      console.error("err: ", err);
+      alert("Chat Failed. Try Again");
+    } finally {
+      setIsProcessingChat(false);
+    }
   };
 
   return (
@@ -43,18 +65,21 @@ export default function ChatWithDoc({ docId }: Props) {
               msg.role === "user" ? "bg-muted" : "bg-secondary"
             }`}
           >
-            <strong>{msg.role}:</strong> {msg.content}
+            <strong>{msg.role}:</strong> {<pre>msg.content</pre>}
           </div>
         ))}
       </div>
 
       <div className="flex gap-2">
         <Input
+          disabled={isProcessingChat}
           placeholder="Ask something..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <Button onClick={handleSend}>Send</Button>
+        <Button onClick={handleSend} disabled={isProcessingChat}>
+          Send
+        </Button>
       </div>
     </div>
   );

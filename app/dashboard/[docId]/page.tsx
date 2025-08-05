@@ -47,19 +47,23 @@ export default async function DocPage({
         </p>
       </div>
 
-      {/* <div> // TODO: Show this in a modal or accordian
+      <div>
         <h2 className="text-xl font-semibold mb-2">Summary</h2>
-        <p className="text-muted-foreground">
-          {document.summary || "Generating summary..."}
-        </p>
-      </div> */}
-
-      <ChatWithDoc docId={params.docId} />
-
-      <div className="my-6 border-t pt-6">
-        <h2 className="text-xl font-semibold mb-2">Your Notes</h2>
-        <NotesEditor docId={params.docId} />
+        <pre className="text-muted-foreground">
+          {document.summary || "Summary not found. Upload your file again."}
+        </pre>
       </div>
+
+      {document.summary ? (
+        <>
+          <ChatWithDoc docId={params.docId} />
+
+          <div className="my-6 border-t pt-6">
+            <h2 className="text-xl font-semibold mb-2">Your Notes</h2>
+            <NotesEditor docId={params.docId} />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
