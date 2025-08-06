@@ -11,6 +11,7 @@ type Props = {
 type Message = {
   role: "user" | "ai";
   content: string;
+  createdAt: number;
 };
 
 export default function ChatWithDoc({ docId }: Props) {
@@ -44,16 +45,9 @@ export default function ChatWithDoc({ docId }: Props) {
       });
 
       if (chatResponse.ok) {
-        const botMessageContent =
-          (await chatResponse.json())?.response || "No Response";
+        const { ai = "No Response", user } = (await chatResponse.json()) || {};
 
-        const userMessage: Message = {
-          role: "user",
-          content: trimmedMessage,
-        };
-
-        const botMessage: Message = { role: "ai", content: botMessageContent };
-        setMessages((prev) => [...prev, userMessage, botMessage]);
+        setMessages((prev) => [...prev, user, ai]);
         setInput("");
       } else {
         alert("Chat failed. Try again");
@@ -82,6 +76,9 @@ export default function ChatWithDoc({ docId }: Props) {
             >
               <strong>{msg.role === "ai" ? "AI" : "You"}:</strong>{" "}
               <pre className="text-wrap">{msg.content}</pre>
+              <div className="text-xs text-gray-400 flex justify-end">
+                {new Date(msg.createdAt).toDateString()}
+              </div>
             </div>
           ))
         )}

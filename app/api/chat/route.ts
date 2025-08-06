@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     ],
   });
 
-  await prisma.message.create({
+  const userMessage = await prisma.message.create({
     data: {
       content: message,
       role: "user",
@@ -65,16 +65,16 @@ export async function POST(req: Request) {
     },
   });
 
-  const aiMessage = aiResponse.choices[0].message.content || "No Response";
+  const aiMsg = aiResponse.choices[0].message.content || "No Response";
 
-  await prisma.message.create({
+  const aiMessage = await prisma.message.create({
     data: {
-      content: aiMessage,
+      content: aiMsg,
       role: "ai",
       documentId: docId,
       userId: session.user.id,
     },
   });
 
-  return NextResponse.json({ response: aiMessage });
+  return NextResponse.json({ ai: aiMessage, user: userMessage });
 }

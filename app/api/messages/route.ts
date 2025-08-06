@@ -30,6 +30,7 @@ export async function GET(req: Request) {
   const formattedMessages = messages.map((msg) => ({
     role: msg.role !== "ai" ? "user" : "ai",
     content: msg.content,
+    createdAt: msg.createdAt,
   }));
 
   return NextResponse.json({ messages: formattedMessages });
