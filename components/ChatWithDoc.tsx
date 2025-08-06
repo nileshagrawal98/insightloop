@@ -98,7 +98,7 @@ export default function ChatWithDoc({ docId }: Props) {
           onClick={handleSend}
           disabled={isProcessingChat || isFetchingMessages}
         >
-          {isProcessingChat ? "Sending..." : "Send"}
+          {isProcessingChat ? "Thinking..." : "Send"}
         </Button>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const { startUpload, isUploading } = useUploadThing("documentUploader");
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function FileUploader() {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
-    setFile(selectedFile);
+    // setFile(selectedFile);
 
     try {
       const res = await startUpload([selectedFile]);
@@ -43,7 +43,7 @@ export default function FileUploader() {
 
       if (!uploadRes.ok) {
         alert("Unable to upload. Try again");
-        setFile(null);
+        // setFile(null);
       } else {
         const uploadedDoc = await uploadRes.json();
         const { id: docId } = uploadedDoc;
@@ -58,7 +58,7 @@ export default function FileUploader() {
 
         if (!summaryRes.ok) {
           alert("Unable to summarize. Try again");
-          setFile(null);
+          // setFile(null);
         } else {
           router.push(`/dashboard/${docId}`);
           return;
@@ -89,12 +89,12 @@ export default function FileUploader() {
             {isUploading ? "Uploading..." : "Summarizing..."}
           </>
         ) : (
-          "Choose file"
+          "+ Upload"
         )}
       </Button>
-      <div className="mt-4">
+      {/* <div className="mt-4">
         {file && <p className="text-sm text-muted-foreground">{file.name}</p>}
-      </div>
+      </div> */}
     </>
   );
 }

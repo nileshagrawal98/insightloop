@@ -1,3 +1,4 @@
+import FileUploader from "@/components/FileUploader";
 import { Button } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -34,9 +35,10 @@ export default async function DashboardPage() {
       </h1>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Your Documents</h2>
-        <Button asChild>
-          <Link href="/dashboard/upload">+ Upload</Link>
-        </Button>
+        {/* <Button asChild> */}
+        {/* <Link href="/dashboard/upload">+ Upload</Link> */}
+        <FileUploader />
+        {/* </Button> */}
       </div>
 
       {documents.length === 0 ? (

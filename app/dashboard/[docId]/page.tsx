@@ -49,7 +49,7 @@ export default async function DocPage({
 
       <div>
         <h2 className="text-xl font-semibold mb-2">Summary</h2>
-        <pre className="text-muted-foreground">
+        <pre className="text-muted-foreground text-wrap">
           {document.summary || "Summary not found. Upload your file again."}
         </pre>
       </div>
